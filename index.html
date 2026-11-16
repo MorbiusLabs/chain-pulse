@@ -461,7 +461,7 @@ async function loadHistory() {
     $("hu-" + c.id).textContent = known ? `${(100 * live / known).toFixed(known === live ? 0 : 1)}%` : "—";
   });
   const first = rows.length ? rows[0][0] : null, mins = Math.round((now - h.updated) / 60);
-  $("histnote").textContent = !rows.length ? "history starts with the next snapshot" : `${fmt(rows.length)} snapshots${now - first < 86000 ? ` since ${new Date(first * 1000).toISOString().slice(11, 16)} UTC` : ""} · updated ${mins < 1 ? "just now" : mins + " min ago"}`;
+  $("histnote").textContent = !rows.length ? "history starts with the next snapshot" : `${fmt(rows.length)} snapshot${rows.length === 1 ? "" : "s"}${now - first < 86000 ? ` since ${new Date(first * 1000).toISOString().slice(11, 16)} UTC` : ""} · updated ${mins < 1 ? "just now" : mins + " min ago"}`;
 }
 if (!EMBED) { const lh = () => loadHistory().catch(() => { $("histnote").textContent = "history not available yet"; }); lh(); setInterval(lh, 300000); }
 setInterval(renderMini, 1000);
