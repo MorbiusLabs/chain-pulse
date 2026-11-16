@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>chain-pulse · are the chains up?</title>
+<meta name="description" content="Live check that Bitcoin, Ethereum, Solana and Base are producing blocks right now. Public data, refreshed every few seconds, runs in your browser.">
+<meta property="og:title" content="chain-pulse: is your bank down? Check if the chains are.">
+<meta property="og:description" content="Live block production for Bitcoin, Ethereum, Solana and Base from public nodes. By Morbius Labs.">
+<meta property="og:image" content="https://morbiuslabs.github.io/chain-pulse/assets/social-preview.png">
+<meta property="og:url" content="https://morbiuslabs.github.io/chain-pulse/">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@MorbiusLabs">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect x=%274%27 y=%274%27 width=%276%27 height=%2724%27 rx=%272%27 fill=%27%23FFB547%27/%3E%3Crect x=%2713%27 y=%274%27 width=%276%27 height=%2724%27 rx=%272%27 fill=%27%235EE6FF%27/%3E%3Crect x=%2722%27 y=%274%27 width=%276%27 height=%2724%27 rx=%272%27 fill=%27%23F4F5F7%27/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#06070A;--panel:#0F1218;--line:rgba(255,255,255,.09);--ink:#F4F5F7;--muted:#8B93A1;--faint:#4A505C;
+        --green:#3DDC97;--amber:#FFB547;--red:#FF5C5C;--cyan:#5EE6FF;--btc:#F7931A;--eth:#8F89FF;--sol:#14F195;--base:#2F6BFF}
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,system-ui,sans-serif}
+  body{min-height:100vh;background:radial-gradient(ellipse 70% 40% at 50% 0%,rgba(94,230,255,.08),transparent 70%),var(--bg)}
+  .wrap{max-width:1080px;margin:0 auto;padding:28px 16px 40px}
+  header{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .bars{display:flex;gap:4px}.bars i{display:block;width:7px;height:26px;border-radius:3px}
+  .brand{font-weight:800;font-size:21px}
+  .brand small{color:var(--muted);font-weight:600;margin-left:8px;font-size:15px}
+  header a{margin-left:auto;color:var(--muted);font:500 14px 'JetBrains Mono',monospace;text-decoration:none;border:1px solid var(--line);padding:7px 12px;border-radius:10px}
+  header a:hover{color:var(--ink)}
+  .hero{margin:34px 0 22px}
+  .hero h1{margin:0;font-size:clamp(34px,6vw,60px);letter-spacing:-.04em;line-height:1.02}
+  .hero p{margin:12px 0 0;color:#C9CED6;font-size:18px;max-width:640px;line-height:1.45}
+  .summary{display:flex;align-items:center;gap:12px;margin:22px 0;padding:14px 18px;border-radius:14px;border:1px solid var(--line);background:var(--panel);font-weight:600}
+  .dot{width:11px;height:11px;border-radius:50%;flex:none}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
+  .card{position:relative;border-radius:18px;border:1px solid var(--line);background:linear-gradient(180deg,rgba(20,24,32,.95),rgba(12,14,19,.95));padding:18px 18px 14px;overflow:hidden}
+  .card .top{display:flex;align-items:center;gap:10px}
+  .card .name{font-weight:800;font-size:19px}
+  .pill{margin-left:auto;font:700 12px 'JetBrains Mono',monospace;padding:4px 9px;border-radius:7px;letter-spacing:.04em}
+  .big{font:700 30px 'JetBrains Mono',monospace;margin-top:14px;letter-spacing:-.02em}
+  .lab{color:var(--muted);font-size:13px;margin-top:2px}
+  .row{display:flex;justify-content:space-between;margin-top:12px;font-size:14px}
+  .row span:first-child{color:var(--muted)}
+  .row span:last-child{font-family:'JetBrains Mono',monospace;font-weight:700}
+  svg.spark{display:block;width:100%;height:46px;margin-top:12px}
+  .err{color:var(--red);font-size:13px;margin-top:8px;min-height:16px}
+  footer{margin-top:26px;color:var(--muted);font-size:14px;line-height:1.6}
+  footer code{font-family:'JetBrains Mono',monospace;color:#C9CED6}
+  footer a{color:var(--cyan)}
+  @keyframes ping{0%{box-shadow:0 0 0 0 currentColor}100%{box-shadow:0 0 0 10px transparent}}
+  .live{animation:ping 1.6s infinite}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="bars"><i style="background:#FFB547"></i><i style="background:#5EE6FF"></i><i style="background:#F4F5F7"></i></div>
+    <div class="brand">chain-pulse<small>by Morbius Labs</small></div>
+    <a href="https://github.com/MorbiusLabs/chain-pulse">source</a>
+  </header>
+
+  <section class="hero">
+    <h1>Is your bank down?<br>Check if the chains are.</h1>
+    <p>Live block production for Bitcoin, Ethereum, Solana and Base, straight from public nodes. Refreshes every few seconds. Nothing to install, nothing sent anywhere but the nodes themselves.</p>
+  </section>
+
+  <div class="summary"><span class="dot" id="sumdot" style="background:var(--faint)"></span><span id="sumtext">Checking chains…</span><span id="clock" style="margin-left:auto;color:var(--muted);font:500 13px 'JetBrains Mono',monospace"></span></div>
+
+  <div class="grid" id="grid"></div>
+
+  <footer>
+    <p><b>How status works.</b> LIVE means the newest block is younger than three times the chain's normal block time (Bitcoin: younger than 60 minutes, since its gaps vary a lot). SLOW means older than that. STALLED means older than ten times the normal time. Block times come from the block itself.</p>
+    <p><b>Sources.</b> Bitcoin: <code>mempool.space</code> API. Ethereum, Base: public JSON-RPC at <code>publicnode.com</code>. Solana: <code>getRecentPerformanceSamples</code> on <code>solana-rpc.publicnode.com</code>. If a node is unreachable the card says so; that is a problem with the node, not proof the chain is down.</p>
+    <p>Made by <a href="https://x.com/MorbiusLabs">@MorbiusLabs</a>, the AI × money news desk that shows its sources. MIT licensed.</p>
+  </footer>
+</div>
+
+<script>
+const CHAINS = [
+  { id: "btc", name: "Bitcoin", color: "var(--btc)", target: 600, live: 3600, kind: "btc" },
+  { id: "eth", name: "Ethereum", color: "var(--eth)", target: 12, kind: "evm", rpc: "https://ethereum-rpc.publicnode.com" },
+  { id: "sol", name: "Solana", color: "var(--sol)", target: 0.4, kind: "sol", rpc: "https://solana-rpc.publicnode.com" },
+  { id: "base", name: "Base", color: "var(--base)", target: 2, kind: "evm", rpc: "https://base-rpc.publicnode.com" },
+];
+const state = {};
+const grid = document.getElementById("grid");
+const fmt = n => Math.round(n).toLocaleString("en-US");
+const ago = s => s < 90 ? `${Math.max(0, Math.round(s))}s ago` : s < 5400 ? `${Math.round(s / 60)} min ago` : `${(s / 3600).toFixed(1)} h ago`;
+const secs = s => s < 1 ? `${s.toFixed(2)} s` : s < 90 ? `${s.toFixed(1)} s` : `${(s / 60).toFixed(1)} min`;
+
+for (const c of CHAINS) {
+  state[c.id] = { blocks: [], err: "" };
+  grid.insertAdjacentHTML("beforeend", `
+  <div class="card" id="c-${c.id}" style="border-top:3px solid ${c.color}">
+    <div class="top"><span class="dot" style="background:${c.color}"></span><span class="name">${c.name}</span><span class="pill" id="p-${c.id}">…</span></div>
+    <div class="big" id="h-${c.id}">—</div><div class="lab" id="hl-${c.id}">${c.kind === "sol" ? "current slot" : "latest block"}</div>
+    <div class="row"><span>${c.kind === "sol" ? "slot time" : "last block"}</span><span id="a-${c.id}">—</span></div>
+    <div class="row"><span>${c.kind === "sol" ? "transactions / s" : "avg block time"}</span><span id="b-${c.id}">—</span></div>
+    <div class="row"><span>${c.kind === "sol" ? "slots / min" : "tx in last block"}</span><span id="t-${c.id}">—</span></div>
+    <svg class="spark" id="s-${c.id}" viewBox="0 0 200 46" preserveAspectRatio="none"></svg>
+    <div class="err" id="e-${c.id}"></div>
+  </div>`);
+}
+
+async function rpc(url, method, params) {
+  const r = await fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ jsonrpc: "2.0", id: 1, method, params }) });
+  const j = await r.json(); if (j.error) throw new Error(j.error.message); return j.result;
+}
+
+async function pollBtc(c) {
+  const b = await (await fetch("https://mempool.space/api/v1/blocks")).json();   // newest 15
+  state[c.id].blocks = b.map(x => ({ h: x.height, t: x.timestamp, tx: x.tx_count })).sort((a, z) => a.h - z.h);
+}
+async function pollEvm(c) {
+  const b = await rpc(c.rpc, "eth_getBlockByNumber", ["latest", false]);
+  const blk = { h: parseInt(b.number, 16), t: parseInt(b.timestamp, 16), tx: b.transactions.length };
+  const arr = state[c.id].blocks;
+  if (!arr.length || arr[arr.length - 1].h < blk.h) arr.push(blk);
+  if (arr.length > 40) arr.shift();
+}
+async function pollSol(c) {
+  const [s] = await rpc(c.rpc, "getRecentPerformanceSamples", [1]);
+  const slot = await rpc(c.rpc, "getSlot", []);
+  state[c.id].sol = { slot, tps: s.numTransactions / s.samplePeriodSecs, slotTime: s.samplePeriodSecs / s.numSlots, perMin: s.numSlots * 60 / s.samplePeriodSecs, seen: Date.now() };
+  const hist = state[c.id].hist || (state[c.id].hist = []);
+  hist.push(s.numTransactions / s.samplePeriodSecs); if (hist.length > 40) hist.shift();
+}
+
+function status(c) {
+  const now = Date.now() / 1000;
+  if (c.kind === "sol") {
+    const s = state[c.id].sol; if (!s) return null;
+    const ok = s.perMin > 60 && (Date.now() - s.seen) < 30000;
+    return ok ? "LIVE" : s.perMin > 0 ? "SLOW" : "STALLED";
+  }
+  const b = state[c.id].blocks; if (!b.length) return null;
+  const age = now - b[b.length - 1].t;
+  const live = c.live || c.target * 3, stall = c.live ? c.live * 2 : c.target * 10;
+  return age < live ? "LIVE" : age < stall ? "SLOW" : "STALLED";
+}
+const COL = { LIVE: "var(--green)", SLOW: "var(--amber)", STALLED: "var(--red)" };
+
+function spark(id, vals, color) {
+  const el = document.getElementById("s-" + id);
+  if (vals.length < 2) { el.innerHTML = ""; return; }
+  const max = Math.max(...vals) || 1;
+  const pts = vals.map((v, i) => `${(i / (vals.length - 1)) * 200},${44 - (v / max) * 40}`).join(" ");
+  el.innerHTML = `<polyline points="${pts}" fill="none" stroke="${color}" stroke-width="2" vector-effect="non-scaling-stroke"/>`;
+}
+
+function render() {
+  const now = Date.now() / 1000;
+  let live = 0, known = 0;
+  for (const c of CHAINS) {
+    const st = status(c), p = document.getElementById("p-" + c.id);
+    if (st) { known++; if (st === "LIVE") live++; p.textContent = st; p.style.background = COL[st]; p.style.color = "#06070A"; p.classList.toggle("live", st === "LIVE"); }
+    document.getElementById("e-" + c.id).textContent = state[c.id].err;
+    if (c.kind === "sol") {
+      const s = state[c.id].sol; if (!s) continue;
+      document.getElementById("h-" + c.id).textContent = fmt(s.slot);
+      document.getElementById("a-" + c.id).textContent = secs(s.slotTime);
+      document.getElementById("b-" + c.id).textContent = fmt(s.tps);
+      document.getElementById("t-" + c.id).textContent = fmt(s.perMin);
+      spark(c.id, state[c.id].hist, getComputedStyle(document.documentElement).getPropertyValue("--sol"));
+      continue;
+    }
+    const b = state[c.id].blocks; if (!b.length) continue;
+    const last = b[b.length - 1];
+    document.getElementById("h-" + c.id).textContent = "#" + fmt(last.h);
+    document.getElementById("a-" + c.id).textContent = ago(now - last.t);
+    const gaps = []; for (let i = 1; i < b.length; i++) gaps.push((b[i].t - b[i - 1].t) / (b[i].h - b[i - 1].h));
+    document.getElementById("b-" + c.id).textContent = gaps.length ? secs(gaps.reduce((a, z) => a + z, 0) / gaps.length) : "—";
+    document.getElementById("t-" + c.id).textContent = fmt(last.tx);
+    spark(c.id, b.map(x => x.tx), getComputedStyle(document.documentElement).getPropertyValue("--" + c.id));
+  }
+  const dot = document.getElementById("sumdot"), txt = document.getElementById("sumtext");
+  if (known) {
+    const all = live === CHAINS.length;
+    dot.style.background = all ? "var(--green)" : live ? "var(--amber)" : "var(--red)";
+    txt.textContent = all ? "All four chains are producing blocks right now." : `${live} of ${CHAINS.length} chains look live. See the cards below.`;
+  }
+  document.getElementById("clock").textContent = new Date().toUTCString().slice(17, 25) + " UTC";
+}
+
+const POLL = { btc: [pollBtc, 30000], evm: [pollEvm, 4000], sol: [pollSol, 8000] };
+for (const c of CHAINS) {
+  const [fn, every] = POLL[c.kind];
+  const run = async () => { try { await fn(c); state[c.id].err = ""; } catch (e) { state[c.id].err = "node unreachable, retrying"; } render(); };
+  run(); setInterval(run, every);
+}
+setInterval(render, 1000);
+</script>
+</body>
+</html>
