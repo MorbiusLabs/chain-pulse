@@ -4,51 +4,93 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>chain-pulse · are the chains up?</title>
-<meta name="description" content="Live check that Bitcoin, Ethereum, Solana and Base are producing blocks right now. Public data, refreshed every few seconds, runs in your browser.">
+<meta name="description" content="Live status of 9 blockchains: Bitcoin, Ethereum, Solana, BNB Chain, Avalanche, Base, Arbitrum, Optimism and Polygon. Blocks, throughput, fees and prices from public nodes, in your browser.">
+<meta name="theme-color" content="#06070A">
 <meta property="og:title" content="chain-pulse: is your bank down? Check if the chains are.">
-<meta property="og:description" content="Live block production for Bitcoin, Ethereum, Solana and Base from public nodes. By Morbius Labs.">
+<meta property="og:description" content="Live block production, throughput, fees and prices for 9 chains, straight from public nodes. By Morbius Labs.">
 <meta property="og:image" content="https://morbiuslabs.github.io/chain-pulse/assets/social-preview.png">
 <meta property="og:url" content="https://morbiuslabs.github.io/chain-pulse/">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@MorbiusLabs">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect x=%274%27 y=%274%27 width=%276%27 height=%2724%27 rx=%272%27 fill=%27%23FFB547%27/%3E%3Crect x=%2713%27 y=%274%27 width=%276%27 height=%2724%27 rx=%272%27 fill=%27%235EE6FF%27/%3E%3Crect x=%2722%27 y=%274%27 width=%276%27 height=%2724%27 rx=%272%27 fill=%27%23F4F5F7%27/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
 <style>
-  :root{--bg:#06070A;--panel:#0F1218;--line:rgba(255,255,255,.09);--ink:#F4F5F7;--muted:#8B93A1;--faint:#4A505C;
-        --green:#3DDC97;--amber:#FFB547;--red:#FF5C5C;--cyan:#5EE6FF;--btc:#F7931A;--eth:#8F89FF;--sol:#14F195;--base:#2F6BFF}
+  :root{--bg:#06070A;--panel:#0E1117;--line:rgba(255,255,255,.08);--line2:rgba(255,255,255,.14);--ink:#F4F5F7;--soft:#C9CED6;--muted:#8B93A1;--faint:#4A505C;
+        --green:#3DDC97;--amber:#FFB547;--red:#FF5C5C;--cyan:#5EE6FF;--mono:'JetBrains Mono',ui-monospace,monospace}
   *{box-sizing:border-box}
-  html,body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,system-ui,sans-serif}
-  body{min-height:100vh;background:radial-gradient(ellipse 70% 40% at 50% 0%,rgba(94,230,255,.08),transparent 70%),var(--bg)}
-  .wrap{max-width:1080px;margin:0 auto;padding:28px 16px 40px}
+  html,body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+  body{min-height:100vh;background:radial-gradient(ellipse 70% 38% at 50% 0%,rgba(94,230,255,.075),transparent 70%),radial-gradient(ellipse 50% 30% at 85% 30%,rgba(255,181,71,.04),transparent 70%),var(--bg)}
+  a{color:inherit}
+  .wrap{max-width:1180px;margin:0 auto;padding:22px 16px 48px}
   header{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
   .bars{display:flex;gap:4px}.bars i{display:block;width:7px;height:26px;border-radius:3px}
-  .brand{font-weight:800;font-size:21px}
-  .brand small{color:var(--muted);font-weight:600;margin-left:8px;font-size:15px}
-  header a{margin-left:auto;color:var(--muted);font:500 14px 'JetBrains Mono',monospace;text-decoration:none;border:1px solid var(--line);padding:7px 12px;border-radius:10px}
-  header a:hover{color:var(--ink)}
-  .hero{margin:34px 0 22px}
-  .hero h1{margin:0;font-size:clamp(34px,6vw,60px);letter-spacing:-.04em;line-height:1.02}
-  .hero p{margin:12px 0 0;color:#C9CED6;font-size:18px;max-width:640px;line-height:1.45}
-  .summary{display:flex;align-items:center;gap:12px;margin:22px 0;padding:14px 18px;border-radius:14px;border:1px solid var(--line);background:var(--panel);font-weight:600}
-  .dot{width:11px;height:11px;border-radius:50%;flex:none}
-  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
-  .card{position:relative;border-radius:18px;border:1px solid var(--line);background:linear-gradient(180deg,rgba(20,24,32,.95),rgba(12,14,19,.95));padding:18px 18px 14px;overflow:hidden}
-  .card .top{display:flex;align-items:center;gap:10px}
-  .card .name{font-weight:800;font-size:19px}
-  .pill{margin-left:auto;font:700 12px 'JetBrains Mono',monospace;padding:4px 9px;border-radius:7px;letter-spacing:.04em}
-  .big{font:700 30px 'JetBrains Mono',monospace;margin-top:14px;letter-spacing:-.02em}
-  .lab{color:var(--muted);font-size:13px;margin-top:2px}
-  .row{display:flex;justify-content:space-between;margin-top:12px;font-size:14px}
+  .brand{font-weight:800;font-size:21px;letter-spacing:-.01em}
+  .brand small{color:var(--muted);font-weight:600;margin-left:8px;font-size:14px}
+  nav{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap}
+  nav a{color:var(--muted);font:500 13px var(--mono);text-decoration:none;border:1px solid var(--line);padding:7px 11px;border-radius:10px;transition:.15s}
+  nav a:hover{color:var(--ink);border-color:var(--line2)}
+  .hero{margin:30px 0 20px;display:grid;grid-template-columns:1fr auto;gap:24px;align-items:end}
+  .hero h1{margin:0;font-size:clamp(34px,5.6vw,62px);letter-spacing:-.045em;line-height:1}
+  .hero p{margin:14px 0 0;color:var(--soft);font-size:17px;max-width:620px;line-height:1.5}
+  .kpis{display:flex;gap:10px}
+  .kpi{min-width:150px;padding:14px 16px;border:1px solid var(--line);border-radius:14px;background:var(--panel)}
+  .kpi b{display:block;font:700 26px var(--mono);letter-spacing:-.02em}
+  .kpi span{color:var(--muted);font-size:12.5px}
+  .summary{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:6px 0 16px;padding:12px 14px 12px 18px;border-radius:14px;border:1px solid var(--line);background:var(--panel)}
+  .summary .msg{font-weight:600;flex:0 1 auto;min-width:0}
+  .dot{width:10px;height:10px;border-radius:50%;flex:none;background:var(--faint)}
+  .spacer{flex:1}
+  .clock{color:var(--muted);font:500 13px var(--mono)}
+  .btn{display:inline-flex;align-items:center;gap:7px;padding:8px 12px;border-radius:10px;border:1px solid var(--line2);background:transparent;color:var(--ink);font:600 13px Inter,sans-serif;cursor:pointer;transition:.15s;text-decoration:none}
+  .btn:hover{background:rgba(255,255,255,.05)}
+  .btn.on{border-color:var(--green);color:var(--green)}
+  .btn svg{width:15px;height:15px;flex:none}
+  .tabs{display:flex;gap:6px;margin:0 0 14px}
+  .tab{padding:7px 14px;border-radius:999px;border:1px solid var(--line);background:transparent;color:var(--muted);font:600 13px Inter,sans-serif;cursor:pointer}
+  .tab.on{color:var(--bg);background:var(--ink);border-color:var(--ink)}
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+  @media (max-width:980px){.grid{grid-template-columns:repeat(2,1fr)}}
+  @media (max-width:620px){.grid{grid-template-columns:1fr}}
+  .card{position:relative;border-radius:16px;border:1px solid var(--line);background:linear-gradient(180deg,rgba(20,24,32,.96),rgba(12,14,19,.96));padding:16px 16px 12px;overflow:hidden;transition:border-color .6s,box-shadow .6s}
+  .card:before{content:"";position:absolute;left:0;right:0;top:0;height:3px;background:var(--c)}
+  .card.flash{border-color:color-mix(in srgb,var(--c) 70%,transparent);box-shadow:0 0 0 1px color-mix(in srgb,var(--c) 30%,transparent),0 0 28px color-mix(in srgb,var(--c) 18%,transparent);transition:none}
+  .card .top{display:flex;align-items:center;gap:8px}
+  .card .name{font-weight:800;font-size:17px}
+  .tag{font:700 10.5px var(--mono);color:var(--muted);border:1px solid var(--line2);padding:2px 6px;border-radius:6px}
+  .pill{margin-left:auto;font:700 11.5px var(--mono);padding:4px 8px;border-radius:7px;letter-spacing:.04em;background:var(--faint);color:var(--bg)}
+  .pill.live{animation:ping 1.8s infinite}
+  @keyframes ping{0%{box-shadow:0 0 0 0 rgba(61,220,151,.55)}100%{box-shadow:0 0 0 9px rgba(61,220,151,0)}}
+  .big{font:700 26px var(--mono);margin-top:12px;letter-spacing:-.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .lab{color:var(--muted);font-size:12px;margin-top:1px}
+  .rows{margin-top:8px}
+  .row{display:flex;justify-content:space-between;gap:10px;padding:5px 0;font-size:13.5px;border-top:1px solid rgba(255,255,255,.04)}
   .row span:first-child{color:var(--muted)}
-  .row span:last-child{font-family:'JetBrains Mono',monospace;font-weight:700}
-  svg.spark{display:block;width:100%;height:46px;margin-top:12px}
-  .err{color:var(--red);font-size:13px;margin-top:8px;min-height:16px}
-  footer{margin-top:26px;color:var(--muted);font-size:14px;line-height:1.6}
-  footer code{font-family:'JetBrains Mono',monospace;color:#C9CED6}
-  footer a{color:var(--cyan)}
-  @keyframes ping{0%{box-shadow:0 0 0 0 currentColor}100%{box-shadow:0 0 0 10px transparent}}
-  .live{animation:ping 1.6s infinite}
+  .row span:last-child{font:700 13px var(--mono);text-align:right}
+  .up{color:var(--green)}.down{color:var(--red)}
+  svg.spark{display:block;width:100%;height:38px;margin-top:8px}
+  .src{display:flex;justify-content:space-between;gap:8px;margin-top:6px;color:var(--faint);font:500 11px var(--mono)}
+  .src .err{color:var(--amber)}
+  .lower{display:grid;grid-template-columns:1.4fr 1fr;gap:12px;margin-top:14px}
+  .box{border:1px solid var(--line);border-radius:16px;background:var(--panel);overflow:hidden}
+  .box h2{margin:0;padding:14px 16px;font-size:15px;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--line)}
+  .box h2 small{margin-left:auto;color:var(--muted);font:500 12px var(--mono)}
+  .feed,.log{height:300px;overflow:hidden;position:relative}
+  .feed:after,.log:after{content:"";position:absolute;left:0;right:0;bottom:0;height:40px;background:linear-gradient(transparent,var(--panel));pointer-events:none}
+  .fi{display:grid;grid-template-columns:72px 12px 92px 1fr auto;gap:8px;align-items:center;padding:8px 16px;font:500 13px var(--mono);border-bottom:1px solid rgba(255,255,255,.035);animation:slide .35s ease-out}
+  .fi .t{color:var(--faint)}.fi .n{color:var(--soft);font-family:Inter,sans-serif;font-weight:600}.fi .h{color:var(--ink)}.fi .x{color:var(--muted)}
+  @keyframes slide{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}
+  .li{padding:10px 16px;font-size:13.5px;border-bottom:1px solid rgba(255,255,255,.035);display:flex;gap:10px;align-items:center}
+  .li .t{color:var(--faint);font:500 12px var(--mono);flex:none}
+  .empty{padding:18px 16px;color:var(--muted);font-size:14px}
+  footer{margin-top:22px;display:grid;grid-template-columns:repeat(3,1fr);gap:18px;color:var(--muted);font-size:13.5px;line-height:1.6}
+  footer b{color:var(--soft)}
+  footer code{font-family:var(--mono);color:var(--soft);font-size:12.5px}
+  .made{margin-top:18px;padding-top:16px;border-top:1px solid var(--line);color:var(--muted);font-size:13.5px;display:flex;gap:10px;flex-wrap:wrap}
+  .made a{color:var(--cyan)}
+  @media (max-width:860px){.hero{grid-template-columns:1fr}.lower{grid-template-columns:1fr}footer{grid-template-columns:1fr}.kpi{flex:1}}
+  @media (max-width:520px){.fi{grid-template-columns:62px 10px 76px 1fr}.fi .x{display:none}.summary .clock{width:100%}.summary .msg{flex:1}.summary .btn{flex:1 1 100%;justify-content:center}.summary .spacer{display:none}}
+  @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
 <body>
@@ -56,139 +98,262 @@
   <header>
     <div class="bars"><i style="background:#FFB547"></i><i style="background:#5EE6FF"></i><i style="background:#F4F5F7"></i></div>
     <div class="brand">chain-pulse<small>by Morbius Labs</small></div>
-    <a href="https://github.com/MorbiusLabs/chain-pulse">source</a>
+    <nav><a href="https://github.com/MorbiusLabs/receipts">receipts</a><a href="https://github.com/MorbiusLabs/chain-pulse">source</a><a href="https://x.com/MorbiusLabs">@MorbiusLabs</a></nav>
   </header>
 
   <section class="hero">
-    <h1>Is your bank down?<br>Check if the chains are.</h1>
-    <p>Live block production for Bitcoin, Ethereum, Solana and Base, straight from public nodes. Refreshes every few seconds. Nothing to install, nothing sent anywhere but the nodes themselves.</p>
+    <div>
+      <h1>Is your bank down?<br>Check if the chains are.</h1>
+      <p>Live block production, throughput, fees and prices for nine networks, straight from public nodes. Nothing to install, no tracking. Your browser talks to the nodes directly.</p>
+    </div>
+    <div class="kpis">
+      <div class="kpi"><b id="k-live">–/9</b><span>chains live now</span></div>
+      <div class="kpi"><b id="k-tps">–</b><span>tx per second, all chains</span></div>
+    </div>
   </section>
 
-  <div class="summary"><span class="dot" id="sumdot" style="background:var(--faint)"></span><span id="sumtext">Checking chains…</span><span id="clock" style="margin-left:auto;color:var(--muted);font:500 13px 'JetBrains Mono',monospace"></span></div>
+  <div class="summary" role="status" aria-live="polite">
+    <span class="dot" id="sumdot"></span><span class="msg" id="sumtext">Checking chains…</span>
+    <span class="clock" id="uptime"></span>
+    <span class="clock" id="clock"></span>
+    <span class="spacer"></span>
+    <button class="btn" id="notify" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg><span>Alert me if a chain stalls</span></button>
+    <a class="btn" id="share" target="_blank" rel="noopener" href="https://x.com/intent/post"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.8 3h3.1l-6.8 7.7 8 10.3h-6.2l-4.9-6.3L5.4 21H2.3l7.2-8.2L1.8 3h6.4l4.4 5.8zm-1.1 16.2h1.7L7.4 4.7H5.5z"/></svg>Share status</a>
+  </div>
+
+  <div class="tabs" role="tablist">
+    <button class="tab on" data-f="all" type="button">All 9</button>
+    <button class="tab" data-f="L1" type="button">Layer 1</button>
+    <button class="tab" data-f="L2" type="button">Layer 2 &amp; PoS</button>
+  </div>
 
   <div class="grid" id="grid"></div>
 
+  <div class="lower">
+    <section class="box"><h2>Live block feed <small id="feedcount">0 blocks seen</small></h2><div class="feed" id="feed"><div class="empty">Waiting for the first blocks…</div></div></section>
+    <section class="box"><h2>Incident log <small>this session</small></h2><div class="log" id="log"><div class="empty">No incidents since you opened this page.</div></div></section>
+  </div>
+
   <footer>
-    <p><b>How status works.</b> LIVE means the newest block is younger than three times the chain's normal block time (Bitcoin: younger than 60 minutes, since its gaps vary a lot). SLOW means older than that. STALLED means older than ten times the normal time. Block times come from the block itself.</p>
-    <p><b>Sources.</b> Bitcoin: <code>mempool.space</code> API. Ethereum, Base: public JSON-RPC at <code>publicnode.com</code>. Solana: <code>getRecentPerformanceSamples</code> on <code>solana-rpc.publicnode.com</code>. If a node is unreachable the card says so; that is a problem with the node, not proof the chain is down.</p>
-    <p>Made by <a href="https://x.com/MorbiusLabs">@MorbiusLabs</a>, the AI × money news desk that shows its sources. MIT licensed.</p>
+    <div><b>How status works.</b> LIVE: the newest block is younger than 3x the chain's normal block time, with a floor of 15 seconds for fast chains (Bitcoin: younger than 60 minutes). SLOW: older than that. STALLED: older than 10x, at least 60 seconds (Bitcoin: 2 hours). Solana is LIVE above 60 slots per minute.</div>
+    <div><b>Sources.</b> Bitcoin: <code>mempool.space</code>, fallback <code>blockstream.info</code>. Other chains: public JSON-RPC, mostly <code>publicnode.com</code>, with official or <code>1rpc.io</code> fallbacks. Each card shows which node answered. Prices: CoinGecko. A failing node is not proof a chain is down.</div>
+    <div><b>Fees.</b> Gas price comes from <code>eth_gasPrice</code>. "≈" is a plain 21,000-gas transfer on Layer 1 EVM chains, a 140 vB payment at the next-block rate on Bitcoin, and the 5,000-lamport base fee on Solana. Layer 2 fees add an L1 data fee, so they show gas price only.</div>
   </footer>
+  <div class="made"><span>Made by <a href="https://x.com/MorbiusLabs">@MorbiusLabs</a>, the AI × money news desk that shows its sources.</span><span class="spacer"></span><span>MIT licensed · one HTML file</span></div>
 </div>
 
 <script>
+"use strict";
 const CHAINS = [
-  { id: "btc", name: "Bitcoin", color: "var(--btc)", target: 600, live: 3600, kind: "btc" },
-  { id: "eth", name: "Ethereum", color: "var(--eth)", target: 12, kind: "evm", rpc: "https://ethereum-rpc.publicnode.com" },
-  { id: "sol", name: "Solana", color: "var(--sol)", target: 0.4, kind: "sol", rpc: "https://solana-rpc.publicnode.com" },
-  { id: "base", name: "Base", color: "var(--base)", target: 2, kind: "evm", rpc: "https://base-rpc.publicnode.com" },
+  { id: "btc",  name: "Bitcoin",   tag: "L1", color: "#F7931A", kind: "btc", target: 600,  cg: "bitcoin",  tk: "BTC" },
+  { id: "eth",  name: "Ethereum",  tag: "L1", color: "#8F89FF", kind: "evm", target: 12,   cg: "ethereum", tk: "ETH", l1fee: true, every: 4000, rpc: ["https://ethereum-rpc.publicnode.com", "https://1rpc.io/eth"] },
+  { id: "sol",  name: "Solana",    tag: "L1", color: "#14F195", kind: "sol", target: 0.4,  cg: "solana",   tk: "SOL", rpc: ["https://solana-rpc.publicnode.com"] },
+  { id: "bnb",  name: "BNB Chain", tag: "L1", color: "#F3BA2F", kind: "evm", target: 0.75, cg: "binancecoin", tk: "BNB", l1fee: true, rpc: ["https://bsc-rpc.publicnode.com", "https://bsc-dataseed.binance.org"] },
+  { id: "avax", name: "Avalanche", tag: "L1", color: "#E84142", kind: "evm", target: 2,    cg: "avalanche-2", tk: "AVAX", l1fee: true, rpc: ["https://avalanche-c-chain-rpc.publicnode.com", "https://api.avax.network/ext/bc/C/rpc"] },
+  { id: "base", name: "Base",      tag: "L2", color: "#2F6BFF", kind: "evm", target: 2,    cg: "ethereum", tk: "ETH", rpc: ["https://base-rpc.publicnode.com", "https://mainnet.base.org", "https://1rpc.io/base"] },
+  { id: "arb",  name: "Arbitrum",  tag: "L2", color: "#28A0F0", kind: "evm", target: 0.25, cg: "ethereum", tk: "ETH", rpc: ["https://arbitrum-one-rpc.publicnode.com", "https://arb1.arbitrum.io/rpc"] },
+  { id: "op",   name: "Optimism",  tag: "L2", color: "#FF0420", kind: "evm", target: 2,    cg: "ethereum", tk: "ETH", rpc: ["https://optimism-rpc.publicnode.com", "https://mainnet.optimism.io"] },
+  { id: "pol",  name: "Polygon",   tag: "PoS", color: "#8247E5", kind: "evm", target: 2,    cg: "polygon-ecosystem-token", tk: "POL", l1fee: true, rpc: ["https://polygon.drpc.org", "https://1rpc.io/matic"] },
 ];
-const state = {};
-const grid = document.getElementById("grid");
-const fmt = n => Math.round(n).toLocaleString("en-US");
-const ago = s => s < 90 ? `${Math.max(0, Math.round(s))}s ago` : s < 5400 ? `${Math.round(s / 60)} min ago` : `${(s / 3600).toFixed(1)} h ago`;
-const secs = s => s < 1 ? `${s.toFixed(2)} s` : s < 90 ? `${s.toFixed(1)} s` : `${(s / 60).toFixed(1)} min`;
+const S = {}, prices = {};
+let btcFee = null, feedCount = 0, notifyOn = false;
+const startedAt = Date.now();
+const $ = (id) => document.getElementById(id);
+const fmt = (n, d = 0) => Number(n).toLocaleString("en-US", { maximumFractionDigits: d, minimumFractionDigits: d });
+const ago = (s) => s < 90 ? `${Math.max(0, Math.round(s))}s ago` : s < 5400 ? `${Math.round(s / 60)} min ago` : `${(s / 3600).toFixed(1)} h ago`;
+const secs = (s) => s < 1 ? `${s.toFixed(2)} s` : s < 90 ? `${s.toFixed(1)} s` : `${(s / 60).toFixed(1)} min`;
+const usd = (v) => v >= 1000 ? `$${fmt(v)}` : v >= 1 ? `$${fmt(v, 2)}` : v >= 0.01 ? `$${v.toFixed(3)}` : v >= 0.0001 ? `$${v.toFixed(4)}` : "<$0.0001";
+const gwei = (g) => g >= 100 ? `${fmt(g)} gwei` : g >= 1 ? `${g.toFixed(1)} gwei` : g >= 0.001 ? `${g.toFixed(3)} gwei` : `${g.toExponential(1)} gwei`;
+const hhmmss = () => new Date().toISOString().slice(11, 19);
+const host = (u) => new URL(u).hostname.split(".").slice(-2).join(".");
 
+// ------------------------------------------------------------------ cards
 for (const c of CHAINS) {
-  state[c.id] = { blocks: [], err: "" };
-  grid.insertAdjacentHTML("beforeend", `
-  <div class="card" id="c-${c.id}" style="border-top:3px solid ${c.color}">
-    <div class="top"><span class="dot" style="background:${c.color}"></span><span class="name">${c.name}</span><span class="pill" id="p-${c.id}">…</span></div>
-    <div class="big" id="h-${c.id}">—</div><div class="lab" id="hl-${c.id}">${c.kind === "sol" ? "current slot" : "latest block"}</div>
-    <div class="row"><span>${c.kind === "sol" ? "slot time" : "last block"}</span><span id="a-${c.id}">—</span></div>
-    <div class="row"><span>${c.kind === "sol" ? "transactions / s" : "avg block time"}</span><span id="b-${c.id}">—</span></div>
-    <div class="row"><span>${c.kind === "sol" ? "slots / min" : "tx in last block"}</span><span id="t-${c.id}">—</span></div>
-    <svg class="spark" id="s-${c.id}" viewBox="0 0 200 46" preserveAspectRatio="none"></svg>
-    <div class="err" id="e-${c.id}"></div>
-  </div>`);
+  S[c.id] = { blocks: [], src: null, err: "", ok: 0, polls: 0, status: null, rpcIx: 0 };
+  const rows = c.kind === "sol"
+    ? [["slot time", "a"], ["throughput", "b"], ["slots / min", "t"], ["base fee", "f"], [`${c.tk} price`, "pr"]]
+    : [["last block", "a"], ["avg block time", "b"], ["throughput", "t"], [c.kind === "btc" ? "fee" : "gas price", "f"], [`${c.tk} price`, "pr"]];
+  $("grid").insertAdjacentHTML("beforeend", `
+  <article class="card" id="c-${c.id}" data-tag="${c.tag}" style="--c:${c.color}">
+    <div class="top"><span class="dot" style="background:${c.color}"></span><span class="name">${c.name}</span><span class="tag">${c.tag}</span><span class="pill" id="st-${c.id}">…</span></div>
+    <div class="big" id="h-${c.id}">—</div><div class="lab">${c.kind === "sol" ? "current slot" : "latest block"}</div>
+    <div class="rows">${rows.map(([l, k]) => `<div class="row"><span>${l}</span><span id="${k}-${c.id}">—</span></div>`).join("")}</div>
+    <svg class="spark" id="s-${c.id}" viewBox="0 0 200 38" preserveAspectRatio="none" aria-hidden="true"></svg>
+    <div class="src"><span id="v-${c.id}">connecting…</span><span class="err" id="e-${c.id}"></span></div>
+  </article>`);
 }
+document.querySelectorAll(".tab").forEach((t) => t.onclick = () => {
+  const f = t.dataset.f;
+  document.querySelectorAll(".tab").forEach((x) => x.classList.toggle("on", x === t));
+  document.querySelectorAll(".card").forEach((el) => el.style.display = f === "all" || el.dataset.tag === f || (f === "L2" && el.dataset.tag === "PoS") ? "" : "none");
+});
 
-async function rpc(url, method, params) {
-  const r = await fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ jsonrpc: "2.0", id: 1, method, params }) });
-  const j = await r.json(); if (j.error) throw new Error(j.error.message); return j.result;
+// ------------------------------------------------------------------ data
+async function getJSON(url, opt) {
+  const ctl = new AbortController(), to = setTimeout(() => ctl.abort(), 8000);
+  try { const r = await fetch(url, { ...opt, signal: ctl.signal }); if (!r.ok) throw new Error(r.status); return await r.json(); }
+  finally { clearTimeout(to); }
 }
-
+// ask the current node; on failure walk the backup list and remember which node answered
+async function rpc(c, body) {
+  const st = S[c.id], n = c.rpc.length;
+  for (let k = 0; k < n; k++) {
+    const ix = (st.rpcIx + k) % n, url = c.rpc[ix];
+    try {
+      const j = await getJSON(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+      if (!Array.isArray(j) || j.some((x) => x.error || x.result == null)) throw new Error("bad rpc reply");
+      if (ix !== st.rpcIx && st.src) logEvent(c, `switched to backup node ${host(url)}`, "var(--amber)");
+      st.rpcIx = ix; st.src = host(url); return j;
+    } catch { /* try next node */ }
+  }
+  throw new Error("all nodes failed");
+}
+function pushBlock(c, blk, quiet) {
+  const arr = S[c.id].blocks;
+  if (arr.length && arr[arr.length - 1].h >= blk.h) return;
+  arr.push(blk); if (arr.length > 40) arr.shift();
+  if (!quiet) { addFeed(c, blk); flash(c); }
+}
 async function pollBtc(c) {
-  const b = await (await fetch("https://mempool.space/api/v1/blocks")).json();   // newest 15
-  state[c.id].blocks = b.map(x => ({ h: x.height, t: x.timestamp, tx: x.tx_count })).sort((a, z) => a.h - z.h);
+  let b;
+  try { b = await getJSON("https://mempool.space/api/v1/blocks"); S[c.id].src = "mempool.space"; }
+  catch { b = await getJSON("https://blockstream.info/api/blocks"); S[c.id].src = "blockstream.info"; }
+  const first = !S[c.id].blocks.length;
+  b.map((x) => ({ h: x.height, t: x.timestamp, tx: x.tx_count })).sort((a, z) => a.h - z.h).forEach((blk) => pushBlock(c, blk, first));
+  if (first) addFeed(c, S[c.id].blocks.at(-1));
 }
 async function pollEvm(c) {
-  const b = await rpc(c.rpc, "eth_getBlockByNumber", ["latest", false]);
-  const blk = { h: parseInt(b.number, 16), t: parseInt(b.timestamp, 16), tx: b.transactions.length };
-  const arr = state[c.id].blocks;
-  if (!arr.length || arr[arr.length - 1].h < blk.h) arr.push(blk);
-  if (arr.length > 40) arr.shift();
+  const j = await rpc(c, [{ jsonrpc: "2.0", id: 1, method: "eth_getBlockByNumber", params: ["latest", false] }, { jsonrpc: "2.0", id: 2, method: "eth_gasPrice", params: [] }]);
+  const blk = j.find((x) => x.id === 1).result, gp = j.find((x) => x.id === 2).result;
+  S[c.id].gas = parseInt(gp, 16) / 1e9;
+  pushBlock(c, { h: parseInt(blk.number, 16), t: parseInt(blk.timestamp, 16), tx: blk.transactions.length });
 }
 async function pollSol(c) {
-  const [s] = await rpc(c.rpc, "getRecentPerformanceSamples", [1]);
-  const slot = await rpc(c.rpc, "getSlot", []);
-  state[c.id].sol = { slot, tps: s.numTransactions / s.samplePeriodSecs, slotTime: s.samplePeriodSecs / s.numSlots, perMin: s.numSlots * 60 / s.samplePeriodSecs, seen: Date.now() };
-  const hist = state[c.id].hist || (state[c.id].hist = []);
-  hist.push(s.numTransactions / s.samplePeriodSecs); if (hist.length > 40) hist.shift();
+  const j = await rpc(c, [{ jsonrpc: "2.0", id: 1, method: "getRecentPerformanceSamples", params: [1] }, { jsonrpc: "2.0", id: 2, method: "getSlot", params: [] }]);
+  const s = j.find((x) => x.id === 1).result[0], slot = j.find((x) => x.id === 2).result, st = S[c.id];
+  st.sol = { slot, tps: s.numTransactions / s.samplePeriodSecs, slotTime: s.samplePeriodSecs / s.numSlots, perMin: s.numSlots * 60 / s.samplePeriodSecs, seen: Date.now() };
+  (st.hist ||= []).push(st.sol.tps); if (st.hist.length > 40) st.hist.shift();
 }
+async function pollPrices() {
+  const ids = [...new Set(CHAINS.map((c) => c.cg))].join(",");
+  const j = await getJSON(`https://api.coingecko.com/api/v3/simple/price?ids=${ids}&vs_currencies=usd&include_24hr_change=true`);
+  for (const k in j) prices[k] = { usd: j[k].usd, chg: j[k].usd_24h_change };
+}
+async function pollBtcFee() { btcFee = (await getJSON("https://mempool.space/api/v1/fees/recommended")).fastestFee; }
 
-function status(c) {
-  const now = Date.now() / 1000;
+// ------------------------------------------------------------------ derived values
+function stats(c) {
+  const st = S[c.id], now = Date.now() / 1000;
   if (c.kind === "sol") {
-    const s = state[c.id].sol; if (!s) return null;
-    const ok = s.perMin > 60 && (Date.now() - s.seen) < 30000;
-    return ok ? "LIVE" : s.perMin > 0 ? "SLOW" : "STALLED";
+    const s = st.sol; if (!s) return null;
+    return { status: s.perMin > 60 && Date.now() - s.seen < 30000 ? "LIVE" : s.perMin > 0 ? "SLOW" : "STALLED", tps: s.tps };
   }
-  const b = state[c.id].blocks; if (!b.length) return null;
-  const age = now - b[b.length - 1].t;
-  const live = c.live || c.target * 3, stall = c.live ? c.live * 2 : c.target * 10;
-  return age < live ? "LIVE" : age < stall ? "SLOW" : "STALLED";
+  const b = st.blocks; if (!b.length) return null;
+  const last = b[b.length - 1], first = b[0], age = now - last.t;
+  const avg = b.length > 1 && last.h > first.h ? (last.t - first.t) / (last.h - first.h) : c.target;
+  const span = last.t - first.t;
+  // tx per second over the blocks we saw; for fast chains we sample heads, so scale by blocks skipped
+  const seen = b.length - 1, produced = last.h - first.h;
+  const tps = span > 0 && seen > 0 ? (b.slice(1).reduce((a, x) => a + x.tx, 0) / seen) * produced / span : null;
+  const live = c.kind === "btc" ? 3600 : Math.max(c.target * 3, 15), stall = c.kind === "btc" ? 7200 : Math.max(c.target * 10, 60);
+  return { status: age < live ? "LIVE" : age < stall ? "SLOW" : "STALLED", age, avg, tps, last };
 }
 const COL = { LIVE: "var(--green)", SLOW: "var(--amber)", STALLED: "var(--red)" };
 
-function spark(id, vals, color) {
-  const el = document.getElementById("s-" + id);
-  if (vals.length < 2) { el.innerHTML = ""; return; }
-  const max = Math.max(...vals) || 1;
-  const pts = vals.map((v, i) => `${(i / (vals.length - 1)) * 200},${44 - (v / max) * 40}`).join(" ");
-  el.innerHTML = `<polyline points="${pts}" fill="none" stroke="${color}" stroke-width="2" vector-effect="non-scaling-stroke"/>`;
+// ------------------------------------------------------------------ rendering
+function spark(c, vals) {
+  const el = $("s-" + c.id);
+  if (!vals || vals.length < 2) { el.innerHTML = ""; return; }
+  const max = Math.max(...vals) || 1, n = vals.length - 1;
+  const pts = vals.map((v, i) => `${((i / n) * 200).toFixed(1)},${(36 - (v / max) * 32).toFixed(1)}`).join(" ");
+  el.innerHTML = `<defs><linearGradient id="g-${c.id}" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="${c.color}" stop-opacity=".28"/><stop offset="1" stop-color="${c.color}" stop-opacity="0"/></linearGradient></defs>`
+    + `<polygon points="0,38 ${pts} 200,38" fill="url(#g-${c.id})"/><polyline points="${pts}" fill="none" stroke="${c.color}" stroke-width="1.8" vector-effect="non-scaling-stroke"/>`;
 }
-
+function flash(c) { const el = $("c-" + c.id); el.classList.add("flash"); setTimeout(() => el.classList.remove("flash"), 450); }
+function addFeed(c, blk) {
+  const feed = $("feed"); if (feed.querySelector(".empty")) feed.innerHTML = "";
+  feedCount++; $("feedcount").textContent = `${fmt(feedCount)} blocks seen`;
+  feed.insertAdjacentHTML("afterbegin", `<div class="fi"><span class="t">${hhmmss()}</span><span class="dot" style="background:${c.color}"></span><span class="n">${c.name}</span><span class="h">#${fmt(blk.h)}</span><span class="x">${fmt(blk.tx)} tx</span></div>`);
+  while (feed.children.length > 14) feed.lastElementChild.remove();
+}
+function logEvent(c, text, color) {
+  const log = $("log"); if (log.querySelector(".empty")) log.innerHTML = "";
+  log.insertAdjacentHTML("afterbegin", `<div class="li"><span class="t">${hhmmss()} UTC</span><span class="dot" style="background:${color}"></span><span><b>${c.name}</b> ${text}</span></div>`);
+  while (log.children.length > 20) log.lastElementChild.remove();
+}
 function render() {
-  const now = Date.now() / 1000;
-  let live = 0, known = 0;
+  let live = 0, known = 0, tpsAll = 0, upOk = 0, upAll = 0;
   for (const c of CHAINS) {
-    const st = status(c), p = document.getElementById("p-" + c.id);
-    if (st) { known++; if (st === "LIVE") live++; p.textContent = st; p.style.background = COL[st]; p.style.color = "#06070A"; p.classList.toggle("live", st === "LIVE"); }
-    document.getElementById("e-" + c.id).textContent = state[c.id].err;
+    const st = S[c.id], x = stats(c), pill = $("st-" + c.id);
+    $("v-" + c.id).textContent = st.src ? `via ${st.src}` : "connecting…";
+    $("e-" + c.id).textContent = st.err;
+    upOk += st.ok; upAll += st.polls;
+    if (!x) continue;
+    known++; if (x.status === "LIVE") live++;
+    if (x.tps) tpsAll += x.tps;
+    if (st.status && st.status !== x.status) {
+      logEvent(c, `is now ${x.status}`, COL[x.status]);
+      if (notifyOn && x.status === "STALLED") try { new Notification(`${c.name} looks stalled`, { body: "No new block for a while. Open chain-pulse for details." }); } catch {}
+    }
+    st.status = x.status;
+    pill.textContent = x.status; pill.style.background = COL[x.status]; pill.classList.toggle("live", x.status === "LIVE");
+    const pr = prices[c.cg];
+    $("pr-" + c.id).innerHTML = pr ? `${usd(pr.usd)} <span class="${pr.chg >= 0 ? "up" : "down"}">${pr.chg >= 0 ? "+" : ""}${(pr.chg ?? 0).toFixed(1)}%</span>` : "—";
     if (c.kind === "sol") {
-      const s = state[c.id].sol; if (!s) continue;
-      document.getElementById("h-" + c.id).textContent = fmt(s.slot);
-      document.getElementById("a-" + c.id).textContent = secs(s.slotTime);
-      document.getElementById("b-" + c.id).textContent = fmt(s.tps);
-      document.getElementById("t-" + c.id).textContent = fmt(s.perMin);
-      spark(c.id, state[c.id].hist, getComputedStyle(document.documentElement).getPropertyValue("--sol"));
+      const s = st.sol;
+      $("h-" + c.id).textContent = fmt(s.slot);
+      $("a-" + c.id).textContent = secs(s.slotTime);
+      $("b-" + c.id).textContent = `${fmt(s.tps)} tx/s`;
+      $("t-" + c.id).textContent = fmt(s.perMin);
+      $("f-" + c.id).textContent = pr ? `≈ ${usd(0.000005 * pr.usd)}` : "5,000 lamports";
+      spark(c, st.hist);
       continue;
     }
-    const b = state[c.id].blocks; if (!b.length) continue;
-    const last = b[b.length - 1];
-    document.getElementById("h-" + c.id).textContent = "#" + fmt(last.h);
-    document.getElementById("a-" + c.id).textContent = ago(now - last.t);
-    const gaps = []; for (let i = 1; i < b.length; i++) gaps.push((b[i].t - b[i - 1].t) / (b[i].h - b[i - 1].h));
-    document.getElementById("b-" + c.id).textContent = gaps.length ? secs(gaps.reduce((a, z) => a + z, 0) / gaps.length) : "—";
-    document.getElementById("t-" + c.id).textContent = fmt(last.tx);
-    spark(c.id, b.map(x => x.tx), getComputedStyle(document.documentElement).getPropertyValue("--" + c.id));
+    $("h-" + c.id).textContent = "#" + fmt(x.last.h);
+    $("a-" + c.id).textContent = ago(x.age);
+    $("b-" + c.id).textContent = secs(x.avg);
+    $("t-" + c.id).textContent = x.tps != null ? `${fmt(x.tps, x.tps < 10 ? 1 : 0)} tx/s` : "measuring…";
+    if (c.kind === "btc") $("f-" + c.id).textContent = btcFee != null ? `${btcFee} sat/vB${pr ? ` ≈ ${usd(btcFee * 140 / 1e8 * pr.usd)}` : ""}` : "—";
+    else $("f-" + c.id).textContent = st.gas != null ? `${gwei(st.gas)}${c.l1fee && pr ? ` ≈ ${usd(21000 * st.gas / 1e9 * pr.usd)}` : ""}` : "—";
+    spark(c, st.blocks.map((b) => b.tx));
   }
-  const dot = document.getElementById("sumdot"), txt = document.getElementById("sumtext");
-  if (known) {
-    const all = live === CHAINS.length;
-    dot.style.background = all ? "var(--green)" : live ? "var(--amber)" : "var(--red)";
-    txt.textContent = all ? "All four chains are producing blocks right now." : `${live} of ${CHAINS.length} chains look live. See the cards below.`;
-  }
-  document.getElementById("clock").textContent = new Date().toUTCString().slice(17, 25) + " UTC";
+  $("k-live").textContent = `${known ? live : "–"}/${CHAINS.length}`;
+  $("k-tps").textContent = tpsAll ? fmt(tpsAll) : "–";
+  const all = known === CHAINS.length && live === CHAINS.length;
+  $("sumdot").style.background = !known ? "var(--faint)" : all ? "var(--green)" : live ? "var(--amber)" : "var(--red)";
+  $("sumtext").textContent = !known ? "Checking chains…" : all ? `All ${CHAINS.length} chains are producing blocks right now.` : known < CHAINS.length ? `${live} of ${CHAINS.length} chains live, ${CHAINS.length - known} still connecting.` : `${live} of ${CHAINS.length} chains look live. See the cards and the incident log.`;
+  $("uptime").textContent = upAll ? `· ${(100 * upOk / upAll).toFixed(1)}% of ${fmt(upAll)} node checks answered` : "";
+  $("clock").textContent = hhmmss() + " UTC";
+  const t = hhmmss().slice(0, 5);
+  const text = all ? `All ${CHAINS.length} chains are producing blocks right now (${t} UTC).` : `${live} of ${CHAINS.length} chains look live right now (${t} UTC).`;
+  $("share").href = "https://x.com/intent/post?text=" + encodeURIComponent(`${text} Checked live from public nodes:`) + "&url=" + encodeURIComponent("https://morbiuslabs.github.io/chain-pulse/") + "&via=MorbiusLabs";
 }
 
-const POLL = { btc: [pollBtc, 30000], evm: [pollEvm, 4000], sol: [pollSol, 8000] };
+// ------------------------------------------------------------------ alerts
+$("notify").onclick = async () => {
+  const label = $("notify").lastElementChild;
+  if (!("Notification" in window)) { label.textContent = "Alerts not supported here"; return; }
+  if (!notifyOn) notifyOn = (await Notification.requestPermission()) === "granted";
+  else notifyOn = false;
+  $("notify").classList.toggle("on", notifyOn);
+  label.textContent = notifyOn ? "Alerts on for this tab" : Notification.permission === "denied" ? "Alerts blocked in browser" : "Alert me if a chain stalls";
+};
+
+// ------------------------------------------------------------------ scheduler, paused while the tab is hidden
+const EVERY = { btc: 30000, evm: 3000, sol: 6000 }, FN = { btc: pollBtc, evm: pollEvm, sol: pollSol };
 for (const c of CHAINS) {
-  const [fn, every] = POLL[c.kind];
-  const run = async () => { try { await fn(c); state[c.id].err = ""; } catch (e) { state[c.id].err = "node unreachable, retrying"; } render(); };
-  run(); setInterval(run, every);
+  const run = async () => {
+    if (document.hidden) return;
+    try { await FN[c.kind](c); S[c.id].ok++; S[c.id].err = ""; }
+    catch { S[c.id].err = "node unreachable, retrying"; }
+    S[c.id].polls++;
+  };
+  run(); setInterval(run, c.every || EVERY[c.kind]);
 }
-setInterval(render, 1000);
+const safe = (f) => () => f().catch(() => {});
+safe(pollPrices)(); setInterval(safe(pollPrices), 60000);
+safe(pollBtcFee)(); setInterval(safe(pollBtcFee), 60000);
+setInterval(render, 1000); render();
 </script>
 </body>
 </html>
