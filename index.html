@@ -90,11 +90,51 @@
   .made a{color:var(--cyan)}
   @media (max-width:860px){.hero{grid-template-columns:1fr}.lower{grid-template-columns:1fr}footer{grid-template-columns:1fr}.kpi{flex:1}}
   @media (max-width:520px){.fi{grid-template-columns:62px 10px 76px 1fr}.fi .x{display:none}.summary .clock{width:100%}.summary .msg{flex:1}.summary .btn{flex:1 1 100%;justify-content:center}.summary .spacer{display:none}}
+
+  .hist{margin-top:14px}
+  .hrow{display:grid;grid-template-columns:120px 1fr 64px;gap:12px;align-items:center;padding:7px 16px}
+  .hrow .n{display:flex;align-items:center;gap:8px;font-weight:600;font-size:13.5px}
+  .strip{display:grid;gap:2px;height:26px}
+  .strip i{display:block;border-radius:2px;background:#232833}
+  .strip i.s0{background:var(--green)}.strip i.s1{background:var(--amber)}.strip i.s2{background:var(--red)}.strip i.s3{background:#3a404c}
+  .hrow .u{font:700 13px var(--mono);text-align:right}
+  .haxis,.legend{display:flex;justify-content:space-between;padding:4px 16px 0 148px;color:var(--faint);font:500 11px var(--mono)}
+  .haxis span:last-child{margin-right:76px}
+  .legend{justify-content:flex-start;gap:16px;padding:10px 16px 14px;color:var(--muted);font-family:Inter,sans-serif;font-size:12.5px}
+  .legend b{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+  .embedbox{margin-top:14px}
+  .embedbox .in{display:grid;grid-template-columns:1fr auto;gap:20px;align-items:start;padding:16px}
+  .embedbox p{margin:0 0 10px;color:var(--soft);font-size:14px;line-height:1.5}
+  .embedbox pre{margin:0;padding:12px 14px;border-radius:10px;background:#07090D;border:1px solid var(--line);font:500 12.5px var(--mono);color:var(--soft);white-space:pre-wrap;word-break:break-all}
+  .embedbox iframe{border:0;border-radius:14px;display:block}
+  @media (max-width:860px){.embedbox .in{grid-template-columns:1fr}.embedbox iframe{width:100%}}
+  @media (max-width:620px){.hrow{grid-template-columns:86px 1fr 52px;gap:8px;padding:6px 12px}.strip{gap:1px;height:22px}.strip i{border-radius:1px}.hrow .n{font-size:12.5px}.haxis{padding-left:106px}.haxis span:last-child{margin-right:60px}}
+  /* embed mode: compact widget for other sites */
+  #mini{display:none}
+  body.embed{background:var(--bg)}
+  body.embed .wrap>*:not(#mini){display:none!important}
+  body.embed .wrap{padding:0;max-width:none}
+  body.embed #mini{display:block;border:1px solid var(--line);border-radius:14px;background:var(--panel);overflow:hidden;font-size:13.5px}
+  #mini .mh{display:flex;align-items:center;gap:8px;padding:12px 14px;border-bottom:1px solid var(--line)}
+  #mini .mh .bars i{width:5px;height:18px}
+  #mini .mh b{font-weight:800}
+  #mini .mh #mclock{margin-left:auto;color:var(--muted);font:500 11.5px var(--mono)}
+  #mini .ms{padding:10px 14px;font-weight:600;display:flex;gap:8px;align-items:center;border-bottom:1px solid var(--line)}
+  #mini .mr{display:grid;grid-template-columns:12px 1fr auto 52px;gap:8px;align-items:center;padding:7px 14px;border-bottom:1px solid rgba(255,255,255,.035)}
+  #mini .mr .age{color:var(--muted);font:500 12px var(--mono);text-align:right}
+  #mini .mr .pill{margin:0;font-size:10.5px;padding:3px 6px;text-align:center}
+  #mini .mf{display:block;padding:9px 14px;color:var(--cyan);font:500 12px var(--mono);text-decoration:none}
   @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
 <body>
 <div class="wrap">
+  <div id="mini">
+    <div class="mh"><span class="bars"><i style="background:#FFB547"></i><i style="background:#5EE6FF"></i><i style="background:#F4F5F7"></i></span><b>chain-pulse</b><span id="mclock"></span></div>
+    <div class="ms"><span class="dot" id="mdot"></span><span id="mtext">Checking chains…</span></div>
+    <div id="mrows"></div>
+    <a class="mf" href="https://morbiuslabs.github.io/chain-pulse/" target="_blank" rel="noopener">live from public nodes · open chain-pulse ↗</a>
+  </div>
   <header>
     <div class="bars"><i style="background:#FFB547"></i><i style="background:#5EE6FF"></i><i style="background:#F4F5F7"></i></div>
     <div class="brand">chain-pulse<small>by Morbius Labs</small></div>
@@ -129,10 +169,29 @@
 
   <div class="grid" id="grid"></div>
 
+  <section class="box hist" id="history">
+    <h2>Last 24 hours <small id="histnote">loading history…</small></h2>
+    <div id="histrows"></div>
+    <div class="haxis"><span>24 h ago</span><span>12 h</span><span>now</span></div>
+    <div class="legend"><span><b style="background:var(--green)"></b>live</span><span><b style="background:var(--amber)"></b>slow</span><span><b style="background:var(--red)"></b>stalled</span><span><b style="background:#3a404c"></b>no node answered</span><span><b style="background:#232833"></b>no snapshot</span></div>
+  </section>
+
   <div class="lower">
     <section class="box"><h2>Live block feed <small id="feedcount">0 blocks seen</small></h2><div class="feed" id="feed"><div class="empty">Waiting for the first blocks…</div></div></section>
     <section class="box"><h2>Incident log <small>this session</small></h2><div class="log" id="log"><div class="empty">No incidents since you opened this page.</div></div></section>
   </div>
+
+  <section class="box embedbox">
+    <h2>Embed chain-pulse <small>free, no key</small></h2>
+    <div class="in">
+      <div>
+        <p>Put a live status widget for all nine chains on your site or dashboard. Paste this where you want it:</p>
+        <pre id="embedcode">&lt;iframe src="https://morbiuslabs.github.io/chain-pulse/?embed=1" width="340" height="440" style="border:0;border-radius:14px" title="chain-pulse: live chain status" loading="lazy"&gt;&lt;/iframe&gt;</pre>
+        <p style="margin:10px 0 0"><button class="btn" id="copyembed" type="button">Copy code</button></p>
+      </div>
+      <iframe id="embedpreview" title="chain-pulse widget preview" width="340" height="440" loading="lazy"></iframe>
+    </div>
+  </section>
 
   <footer>
     <div><b>How status works.</b> LIVE: the newest block is younger than 3x the chain's normal block time, with a floor of 15 seconds for fast chains (Bitcoin: younger than 60 minutes). SLOW: older than that. STALLED: older than 10x, at least 60 seconds (Bitcoin: 2 hours). Solana is LIVE above 60 slots per minute.</div>
@@ -354,6 +413,58 @@ const safe = (f) => () => f().catch(() => {});
 safe(pollPrices)(); setInterval(safe(pollPrices), 60000);
 safe(pollBtcFee)(); setInterval(safe(pollBtcFee), 60000);
 setInterval(render, 1000); render();
+
+// ------------------------------------------------------------------ embed mode
+const EMBED = new URLSearchParams(location.search).has("embed");
+if (EMBED) document.body.classList.add("embed");
+else { const f = $("embedpreview"); f.loading = "lazy"; f.src = location.pathname + "?embed=1"; }
+$("copyembed").onclick = async () => {
+  const code = $("embedcode").textContent;
+  try { await navigator.clipboard.writeText(code); $("copyembed").textContent = "Copied"; }
+  catch { const r = document.createRange(); r.selectNodeContents($("embedcode")); getSelection().removeAllRanges(); getSelection().addRange(r); $("copyembed").textContent = "Selected, press Cmd/Ctrl+C"; }
+  setTimeout(() => $("copyembed").textContent = "Copy code", 2500);
+};
+for (const c of CHAINS) $("mrows").insertAdjacentHTML("beforeend", `<div class="mr"><span class="dot" style="background:${c.color}"></span><span>${c.name}</span><span class="pill" id="mp-${c.id}">…</span><span class="age" id="ma-${c.id}">—</span></div>`);
+function renderMini() {
+  for (const c of CHAINS) {
+    const x = stats(c); if (!x) continue;
+    const p = $("mp-" + c.id); p.textContent = x.status; p.style.background = COL[x.status];
+    $("ma-" + c.id).textContent = c.kind === "sol" ? `${fmt(S[c.id].sol.tps)}/s` : ago(x.age).replace(" ago", "");
+  }
+  $("mdot").style.background = $("sumdot").style.background;
+  $("mtext").textContent = $("sumtext").textContent;
+  $("mclock").textContent = hhmmss().slice(0, 5) + " UTC";
+}
+
+// ------------------------------------------------------------------ 24h history (written every 5 min by GitHub Actions to the data branch)
+const HIST_URL = new URLSearchParams(location.search).get("history") || "https://raw.githubusercontent.com/MorbiusLabs/chain-pulse/data/history.json";
+const NAMES = ["live", "slow", "stalled", "no node answered"];
+const NB = matchMedia("(max-width:620px)").matches ? 48 : 96;   // buckets across 24 h
+for (const c of CHAINS) $("histrows").insertAdjacentHTML("beforeend", `<div class="hrow"><span class="n"><span class="dot" style="background:${c.color}"></span>${c.name}</span><div class="strip" id="hs-${c.id}" style="grid-template-columns:repeat(${NB},1fr)">${"<i></i>".repeat(NB)}</div><span class="u" id="hu-${c.id}">—</span></div>`);
+async function loadHistory() {
+  const h = await getJSON(HIST_URL + (HIST_URL.includes("?") ? "&" : "?") + "t=" + Math.floor(Date.now() / 60000));
+  const now = Date.now() / 1000, from = now - 86400, B = 86400 / NB;
+  const rows = h.rows.filter((r) => r[0] >= from);
+  CHAINS.forEach((c) => {
+    const ix = h.chains.indexOf(c.id), cells = $("hs-" + c.id).children;
+    let live = 0, known = 0;
+    for (let k = 0; k < NB; k++) {
+      const a = from + k * B, b = a + B;
+      const codes = rows.filter((r) => r[0] >= a && r[0] < b).map((r) => ix < 0 ? 3 : +r[1][ix]);
+      const real = codes.filter((v) => v < 3);
+      real.forEach((v) => { known++; if (v === 0) live++; });
+      const worst = real.length ? Math.max(...real) : codes.length ? 3 : -1;
+      cells[k].className = worst < 0 ? "" : "s" + worst;
+      const t0 = new Date(a * 1000).toISOString().slice(11, 16), t1 = new Date(b * 1000).toISOString().slice(11, 16);
+      cells[k].title = `${t0}–${t1} UTC · ${worst < 0 ? "no snapshot" : NAMES[worst]}${codes.length ? ` · ${codes.length} checks` : ""}`;
+    }
+    $("hu-" + c.id).textContent = known ? `${(100 * live / known).toFixed(known === live ? 0 : 1)}%` : "—";
+  });
+  const first = rows.length ? rows[0][0] : null, mins = Math.round((now - h.updated) / 60);
+  $("histnote").textContent = !rows.length ? "history starts with the next snapshot" : `${fmt(rows.length)} snapshots${now - first < 86000 ? ` since ${new Date(first * 1000).toISOString().slice(11, 16)} UTC` : ""} · updated ${mins < 1 ? "just now" : mins + " min ago"}`;
+}
+if (!EMBED) { const lh = () => loadHistory().catch(() => { $("histnote").textContent = "history not available yet"; }); lh(); setInterval(lh, 300000); }
+setInterval(renderMini, 1000);
 </script>
 </body>
 </html>

@@ -16,11 +16,13 @@ One HTML file. No build step, no backend, no tracking, no API keys. Your browser
 - **Fees in dollars.** Gas price on EVM chains, sat/vB on Bitcoin, base fee on Solana, plus what a simple transfer costs right now on Layer 1s.
 - **Prices.** Native token price and 24h change for every chain.
 - **Live block feed.** Every new block the page sees, as it lands.
+- **24-hour history.** Uptime bars and percentages for every chain, recorded every 5 minutes even when nobody has the page open.
 - **Incident log.** Status changes and node failovers during your session, timestamped.
 - **Node failover.** Each chain has a primary node and backups. If one fails, the page switches and tells you which node answered.
 - **Stall alerts.** Opt in, and your browser notifies you if a chain stops producing blocks while the tab is open.
 - **Share status.** One click posts the current state to X.
 - **Polite by default.** Polling pauses while the tab is hidden.
+- **Embeddable.** A compact widget for your site or dashboard, see below.
 
 ## Data sources
 
@@ -37,6 +39,20 @@ One HTML file. No build step, no backend, no tracking, no API keys. Your browser
 | Polygon PoS | latest block, gas price | `polygon.drpc.org` | `1rpc.io` |
 
 Prices: CoinGecko public API.
+
+## Embed
+
+```html
+<iframe src="https://morbiuslabs.github.io/chain-pulse/?embed=1" width="340" height="440" style="border:0;border-radius:14px" title="chain-pulse: live chain status" loading="lazy"></iframe>
+```
+
+Free, no key. The widget runs in the visitor's browser and talks to the same public nodes.
+
+## How the history works
+
+A GitHub Actions job ([.github/workflows/pulse.yml](.github/workflows/pulse.yml)) runs [scripts/snapshot.mjs](scripts/snapshot.mjs) every 5 minutes. It checks all nine chains with the same rules as the page and appends one row to `history.json` on the `data` branch, keeping 7 days. The page reads it from `raw.githubusercontent.com` and draws the last 24 hours in 15-minute buckets, each colored by the worst status seen in it.
+
+GitHub runs scheduled jobs on a best-effort basis, so some 5-minute slots can be late or skipped. Those show up as gaps, never as invented data. Anyone can audit the raw file: [history.json](https://github.com/MorbiusLabs/chain-pulse/blob/data/history.json).
 
 ## Status rules
 
