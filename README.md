@@ -4,9 +4,9 @@
 
 Live status for nine networks: Bitcoin, Ethereum, Solana, BNB Chain, Avalanche, Base, Arbitrum, Optimism and Polygon. Blocks, throughput, fees and prices, straight from public nodes, refreshed every few seconds.
 
-**Open it: [morbiuslabs.github.io/chain-pulse](https://morbiuslabs.github.io/chain-pulse/)**
+**Open it: [pulse.morbiuslabs.org](https://pulse.morbiuslabs.org/)**
 
-[![chain-pulse live page](assets/screenshot.png)](https://morbiuslabs.github.io/chain-pulse/)
+[![chain-pulse live page](assets/screenshot.png)](https://pulse.morbiuslabs.org/)
 
 One HTML file. No build step, no backend, no tracking, no API keys. Your browser talks straight to the public nodes listed below and nothing else.
 
@@ -43,7 +43,7 @@ Prices: CoinGecko public API.
 ## Embed
 
 ```html
-<iframe src="https://morbiuslabs.github.io/chain-pulse/?embed=1" width="340" height="440" style="border:0;border-radius:14px" title="chain-pulse: live chain status" loading="lazy"></iframe>
+<iframe src="https://pulse.morbiuslabs.org/?embed=1" width="340" height="440" style="border:0;border-radius:14px" title="chain-pulse: live chain status" loading="lazy"></iframe>
 ```
 
 Free, no key. The widget runs in the visitor's browser and talks to the same public nodes.

@@ -8,8 +8,8 @@
 <meta name="theme-color" content="#06070A">
 <meta property="og:title" content="chain-pulse: is your bank down? Check if the chains are.">
 <meta property="og:description" content="Live block production, throughput, fees and prices for 9 chains, straight from public nodes. By Morbius Labs.">
-<meta property="og:image" content="https://morbiuslabs.github.io/chain-pulse/assets/social-preview.png">
-<meta property="og:url" content="https://morbiuslabs.github.io/chain-pulse/">
+<meta property="og:image" content="https://pulse.morbiuslabs.org/assets/social-preview.png">
+<meta property="og:url" content="https://pulse.morbiuslabs.org/">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@MorbiusLabs">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect x=%274%27 y=%274%27 width=%276%27 height=%2724%27 rx=%272%27 fill=%27%23FFB547%27/%3E%3Crect x=%2713%27 y=%274%27 width=%276%27 height=%2724%27 rx=%272%27 fill=%27%235EE6FF%27/%3E%3Crect x=%2722%27 y=%274%27 width=%276%27 height=%2724%27 rx=%272%27 fill=%27%23F4F5F7%27/%3E%3C/svg%3E">
@@ -133,12 +133,12 @@
     <div class="mh"><span class="bars"><i style="background:#FFB547"></i><i style="background:#5EE6FF"></i><i style="background:#F4F5F7"></i></span><b>chain-pulse</b><span id="mclock"></span></div>
     <div class="ms"><span class="dot" id="mdot"></span><span id="mtext">Checking chains…</span></div>
     <div id="mrows"></div>
-    <a class="mf" href="https://morbiuslabs.github.io/chain-pulse/" target="_blank" rel="noopener">live from public nodes · open chain-pulse ↗</a>
+    <a class="mf" href="https://pulse.morbiuslabs.org/" target="_blank" rel="noopener">live from public nodes · open chain-pulse ↗</a>
   </div>
   <header>
     <div class="bars"><i style="background:#FFB547"></i><i style="background:#5EE6FF"></i><i style="background:#F4F5F7"></i></div>
     <div class="brand">chain-pulse<small>by Morbius Labs</small></div>
-    <nav><a href="https://github.com/MorbiusLabs/receipts">receipts</a><a href="https://github.com/MorbiusLabs/chain-pulse">source</a><a href="https://x.com/MorbiusLabs">@MorbiusLabs</a></nav>
+    <nav><a href="https://morbiuslabs.org/">← morbiuslabs.org</a><a href="https://morbiuslabs.org/receipts/">receipts</a><a href="https://github.com/MorbiusLabs/chain-pulse" target="_blank" rel="noopener">source ↗</a><a href="https://x.com/MorbiusLabs" target="_blank" rel="noopener">@MorbiusLabs ↗</a></nav>
   </header>
 
   <section class="hero">
@@ -186,7 +186,7 @@
     <div class="in">
       <div>
         <p>Put a live status widget for all nine chains on your site or dashboard. Paste this where you want it:</p>
-        <pre id="embedcode">&lt;iframe src="https://morbiuslabs.github.io/chain-pulse/?embed=1" width="340" height="440" style="border:0;border-radius:14px" title="chain-pulse: live chain status" loading="lazy"&gt;&lt;/iframe&gt;</pre>
+        <pre id="embedcode">&lt;iframe src="https://pulse.morbiuslabs.org/?embed=1" width="340" height="440" style="border:0;border-radius:14px" title="chain-pulse: live chain status" loading="lazy"&gt;&lt;/iframe&gt;</pre>
         <p style="margin:10px 0 0"><button class="btn" id="copyembed" type="button">Copy code</button></p>
       </div>
       <iframe id="embedpreview" title="chain-pulse widget preview" width="340" height="440" loading="lazy"></iframe>
@@ -198,7 +198,7 @@
     <div><b>Sources.</b> Bitcoin: <code>mempool.space</code>, fallback <code>blockstream.info</code>. Other chains: public JSON-RPC, mostly <code>publicnode.com</code>, with official or <code>1rpc.io</code> fallbacks. Each card shows which node answered. Prices: CoinGecko. A failing node is not proof a chain is down.</div>
     <div><b>Fees.</b> Gas price comes from <code>eth_gasPrice</code>. "≈" is a plain 21,000-gas transfer on Layer 1 EVM chains, a 140 vB payment at the next-block rate on Bitcoin, and the 5,000-lamport base fee on Solana. Layer 2 fees add an L1 data fee, so they show gas price only.</div>
   </footer>
-  <div class="made"><span>Made by <a href="https://x.com/MorbiusLabs">@MorbiusLabs</a>, the AI × money news desk that shows its sources.</span><span class="spacer"></span><span>MIT licensed · one HTML file</span></div>
+  <div class="made"><span>Made by <a href="https://morbiuslabs.org/">Morbius Labs</a>, the AI × money news desk that shows its sources.</span><span class="spacer"></span><span>MIT licensed · one HTML file</span></div>
 </div>
 
 <script>
@@ -385,7 +385,7 @@ function render() {
   $("clock").textContent = hhmmss() + " UTC";
   const t = hhmmss().slice(0, 5);
   const text = all ? `All ${CHAINS.length} chains are producing blocks right now (${t} UTC).` : `${live} of ${CHAINS.length} chains look live right now (${t} UTC).`;
-  $("share").href = "https://x.com/intent/post?text=" + encodeURIComponent(`${text} Checked live from public nodes:`) + "&url=" + encodeURIComponent("https://morbiuslabs.github.io/chain-pulse/") + "&via=MorbiusLabs";
+  $("share").href = "https://x.com/intent/post?text=" + encodeURIComponent(`${text} Checked live from public nodes:`) + "&url=" + encodeURIComponent("https://pulse.morbiuslabs.org/") + "&via=MorbiusLabs";
 }
 
 // ------------------------------------------------------------------ alerts
