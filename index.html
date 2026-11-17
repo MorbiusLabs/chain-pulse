@@ -416,7 +416,13 @@ setInterval(render, 1000); render();
 
 // ------------------------------------------------------------------ embed mode
 const EMBED = new URLSearchParams(location.search).has("embed");
-if (EMBED) document.body.classList.add("embed");
+if (EMBED) {
+  document.body.classList.add("embed");
+  // on our own site the widget link stays in the same tab; on other sites it opens a new one
+  const mf = document.querySelector("a.mf");
+  let host = ""; try { host = new URL(document.referrer).hostname; } catch {}
+  if (mf && /(^|\.)morbiuslabs\.org$/.test(host)) { mf.target = "_top"; mf.removeAttribute("rel"); mf.textContent = "live from public nodes · open chain-pulse →"; }
+}
 else { const f = $("embedpreview"); f.loading = "lazy"; f.src = location.pathname + "?embed=1"; }
 $("copyembed").onclick = async () => {
   const code = $("embedcode").textContent;
