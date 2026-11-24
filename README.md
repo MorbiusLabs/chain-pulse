@@ -79,4 +79,4 @@ python3 -m http.server 8000
 
 On Nov 16, 2026, Chase, Bank of America, Wells Fargo and U.S. Bank customers reported problems at the same time. Between noon and 3 p.m. ET, Bitcoin added 26 blocks. The full check is in [MorbiusLabs/receipts](https://github.com/MorbiusLabs/receipts).
 
-Made by [@MorbiusLabs](https://x.com/MorbiusLabs), the AI x money news desk that shows its sources. MIT licensed.
+Made by [@morbius_labs](https://x.com/morbius_labs), the AI x money news desk that shows its sources. MIT licensed.

@@ -11,7 +11,7 @@
 <meta property="og:image" content="https://pulse.morbiuslabs.org/assets/social-preview.png">
 <meta property="og:url" content="https://pulse.morbiuslabs.org/">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:site" content="@MorbiusLabs">
+<meta name="twitter:site" content="@morbius_labs">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect x=%274%27 y=%274%27 width=%276%27 height=%2724%27 rx=%272%27 fill=%27%23FFB547%27/%3E%3Crect x=%2713%27 y=%274%27 width=%276%27 height=%2724%27 rx=%272%27 fill=%27%235EE6FF%27/%3E%3Crect x=%2722%27 y=%274%27 width=%276%27 height=%2724%27 rx=%272%27 fill=%27%23F4F5F7%27/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
@@ -138,7 +138,7 @@
   <header>
     <div class="bars"><i style="background:#FFB547"></i><i style="background:#5EE6FF"></i><i style="background:#F4F5F7"></i></div>
     <div class="brand">chain-pulse<small>by Morbius Labs</small></div>
-    <nav><a href="https://morbiuslabs.org/">← morbiuslabs.org</a><a href="https://morbiuslabs.org/receipts/">receipts</a><a href="https://github.com/MorbiusLabs/chain-pulse" target="_blank" rel="noopener">source ↗</a><a href="https://x.com/MorbiusLabs" target="_blank" rel="noopener">@MorbiusLabs ↗</a></nav>
+    <nav><a href="https://morbiuslabs.org/">← morbiuslabs.org</a><a href="https://morbiuslabs.org/receipts/">receipts</a><a href="https://github.com/MorbiusLabs/chain-pulse" target="_blank" rel="noopener">source ↗</a><a href="https://x.com/morbius_labs" target="_blank" rel="noopener">@morbius_labs ↗</a></nav>
   </header>
 
   <section class="hero">
@@ -385,7 +385,7 @@ function render() {
   $("clock").textContent = hhmmss() + " UTC";
   const t = hhmmss().slice(0, 5);
   const text = all ? `All ${CHAINS.length} chains are producing blocks right now (${t} UTC).` : `${live} of ${CHAINS.length} chains look live right now (${t} UTC).`;
-  $("share").href = "https://x.com/intent/post?text=" + encodeURIComponent(`${text} Checked live from public nodes:`) + "&url=" + encodeURIComponent("https://pulse.morbiuslabs.org/") + "&via=MorbiusLabs";
+  $("share").href = "https://x.com/intent/post?text=" + encodeURIComponent(`${text} Checked live from public nodes:`) + "&url=" + encodeURIComponent("https://pulse.morbiuslabs.org/") + "&via=morbius_labs";
 }
 
 // ------------------------------------------------------------------ alerts
